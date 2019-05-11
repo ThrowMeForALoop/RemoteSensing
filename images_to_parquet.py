@@ -1,5 +1,5 @@
 import sys
-from pyspark import SparkContext
+from pyspark import SparkContext, SparkConf
 from pyspark.sql import SparkSession, Row
 import numpy as np
 from PIL import Image
@@ -11,11 +11,34 @@ from pyspark.ml.linalg import DenseVector
 from pyspark.sql.types import _infer_schema
 from pyspark.sql.functions import monotonically_increasing_id
 
+import argparse
 
-# Load spark context locally
-sc = SparkContext("local[*]", "Images To Parquet")
-images_rdd = sc.binaryFiles("file:///Volumes/Data/VUSubjects/Thesis/src/Test/data/tiff_images/*")
-masks_rdd = sc.binaryFiles("file:///Volumes/Data/VUSubjects/Thesis/src/Test/data/masks/*")
+parser = argparse.ArgumentParser()
+parser.add_argument("--inputpath", help="image input path")
+parser.add_argument("--outputpath", help="parquet output path")
+
+
+args = parser.parse_args()
+
+input_path = None
+output_path = None
+
+if args.inputpath:
+    input_path = args.inputpath
+if args.outputpath:
+    output_path = args.outputpath
+
+if input_path is None or output_path is None:
+    print('<Usage> --input inputpath  --output outputpath')
+    sys.exit() 
+
+# Load spark context
+spark_conf = SparkConf().setAppName('Image preprocessing')
+sc = SparkContext(conf=spark_conf)
+
+# Load input data
+images_rdd = sc.binaryFiles(input_path + 'tiff_images/*')
+masks_rdd = sc.binaryFiles(input_path + 'masks/*')
 
 # Decode binary to image and transform image into numpy array
 image_to_array = lambda rawdata: np.asarray(Image.open(BytesIO(rawdata))).reshape((-1, ))
@@ -25,25 +48,20 @@ masks_flat_numpy_rdd = masks_rdd.values().map(image_to_array)\
                                          .map(lambda array: array / 255 ) \
                                          .map(lambda x: (DenseVector(x),))
 
+# Create session to create data frame
 session = SparkSession(sc)
-# test_array = DenseVector(np.arange(10))
-# print(_infer_schema((test_array, )))
 
 
 images_df = image_flat_numpy_rdd.toDF(["features"]).withColumn("id", monotonically_increasing_id())
 mask_df = masks_flat_numpy_rdd.toDF(["masks"]).withColumn("id", monotonically_increasing_id())
 
 train_df = images_df.join(mask_df, "id", "outer").drop("id")
-# df.show()
-#df.write.parquet("file:///output/")
-# df.createOrReplaceTempView("image_numpy_rdd")
-train_df.show()
-
-train_df.write.mode('overwrite').parquet("file:///Volumes/Data/VUSubjects/Thesis/src/Test/data/output/train.parquet")
+train_df.repartition(1).write.mode('overwrite') \
+	.parquet("file:///var/scratch/tnguyenh/src/RemoteSensing/output/train.parquet")
 
 # for r in image_numpy_rdd.collect():
 #     print(r.shape)
 
-# sc.stop()
+sc.stop()
 
-print("Done")
+print("========Done=========")
