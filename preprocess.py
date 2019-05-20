@@ -76,8 +76,7 @@ def generate_parquet(feature_path, mask_path, output_path):
     # Concat image_df and mask_df row by row
     train_df = image_df.join(mask_df, "id", "outer").drop("id")
     with materialize_dataset(session, output_path, TrainSchema, rowgroup_size_mb):
-            train_df.coalesce(1) \
-                    .write \
+            train_df.write \
                     .mode('overwrite') \
                     .parquet(output_path)
 

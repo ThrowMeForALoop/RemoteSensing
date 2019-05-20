@@ -2,14 +2,12 @@ import datetime
 import h5py
 import io
 import os
-import pyarrow as pa
+#import pyarrow as pa
+
 from pyspark import SparkConf, Row
 from pyspark.sql import SparkSession
 import pyspark.sql.types as T
 import pyspark.sql.functions as F
-
-from petastorm import make_batch_reader
-from petastorm.tf_utils import make_petastorm_dataset
 
 from keras.models import Model
 from keras.layers import Input, BatchNormalization, Activation, Dense, Dropout, UpSampling2D
@@ -20,11 +18,11 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 from keras.optimizers import Adam
 
 import tensorflow as tf
-import keras.backend as K
+import tensorflow.keras.backend as K
 import horovod.spark
-import horovod.tensorflow.keras as hvd
+import horovod.tensorflow as hvd
 
-
+print("I am here")
 def unet(pretrained_weights = None,input_size = (256, 256, 1)):
     inputs = Input(input_size)
     conv1 = Conv2D(64, 3, activation = 'relu', padding = 'same', kernel_initializer = 'he_normal')(inputs)
@@ -95,7 +93,7 @@ def deserialize_model(model_bytes, load_model_fn):
     with h5py.File(bio) as f:
         return load_model_fn(f)
 
-DATA_LOCATION = 'file://' + os.getcwd() + '/data/output/train'
+DATA_LOCATION = 'hdfs:///output'
 PETASTORM_HDFS_DRIVER = 'libhdfs'
 
 def train_fn(model_bytes):
@@ -103,8 +101,8 @@ def train_fn(model_bytes):
     # with TensorFlow libraries.  Use `pa` package reference to ensure it's loaded before
     # functions like `deserialize_model` which are implemented at the top level.
     # See https://jira.apache.org/jira/browse/ARROW-3346
-
-    
+    #pa 
+     
     train_rows = 2
     BATCH_SIZE = 1
 
@@ -115,7 +113,7 @@ def train_fn(model_bytes):
     from petastorm.tf_utils import make_petastorm_dataset
     import tempfile
     import tensorflow as tf
-    import keras.backend as K
+    import tensorflow.keras.backend as K
     import shutil
     # import pyarrow as pa
     print("=>>>>>>>>>> Start init enviroment")
@@ -216,6 +214,7 @@ def train_fn(model_bytes):
 
 
 if __name__ == "__main__":
+    import sys
     im_height = 4096
     im_width = 4096
     band = 3
