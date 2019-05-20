@@ -1,0 +1,13 @@
+#!/usr/bin/bash
+
+mkdir frameworks
+
+cd frameworks && wget https://archive.apache.org/dist/zookeeper/zookeeper-3.4.8/zookeeper-3.4.8.tar.gz && tar -xvzf zookeeper-3.4.8.tar.gz
+
+cd ../
+
+cd frameworks && wget https://archive.apache.org/dist/hadoop/core/hadoop-2.6.0/hadoop-2.6.0.tar.gz && tar -xvzf hadoop-2.6.0.tar.gz
+
+cd ../
+
+cd frameworks && wget https://archive.apache.org/dist/spark/spark-2.4.0/spark-2.4.0-bin-hadoop2.7.tgz && tar -xvzf spark-2.4.0-bin-hadoop2.7.tgz && mv spark-2.4.0-bin-hadoop2.7 spark-2.4.0

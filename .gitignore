@@ -103,5 +103,6 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+# deploy
 das-bigdata-deployment/frameworks
-
+.vscode/
