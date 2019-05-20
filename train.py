@@ -2,9 +2,15 @@ import os
 from train_model import unet
 from augmentation.data_generator import DataGenerator
 
-import keras
-from keras.callbacks import ModelCheckpoint
-from keras.optimizers import Adam
+import tensorflow as tf
+
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+session = tf.Session(config=config)
+
+import tensorflow.python.keras
+from tensorflow.python.keras.callbacks import ModelCheckpoint
+from tensorflow.python.keras.optimizers import Adam
 
 if __name__=="__main__":
     # Parameters
@@ -32,5 +38,6 @@ if __name__=="__main__":
     train_model.fit_generator(data_generator, 
                         steps_per_epoch=int(len(train_images)/BATCH_SIZE) , epochs=5,
                         callbacks=[model_checkpoint])
+
 
 

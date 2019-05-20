@@ -1,6 +1,6 @@
 import os
 import numpy as np
-import keras
+from tensorflow.python import keras 
 import math
 from PIL import Image
 
@@ -32,7 +32,6 @@ class DataGenerator(keras.utils.Sequence):
         Arguments:
             index {[int]} -- index of batch
         """
-        print("I am here")
         indexes = self.indexes[index * self.batch_size: (index + 1) * self.batch_size]
         batch_images = [self.images[k] for k in indexes]
 
@@ -45,7 +44,6 @@ class DataGenerator(keras.utils.Sequence):
         Arguments:
             batch_images {list of images in each batch}
         """
-        print("I am here")
         UNET_SIZE = 4096
 
         if self.dim[0] < UNET_SIZE or self.dim[1] < UNET_SIZE:
@@ -66,15 +64,13 @@ class DataGenerator(keras.utils.Sequence):
                               .crop((crop_top_left, crop_top_left, crop_bottom_right, crop_bottom_right)) 
                               
             Y[index, ] = np.asarray(mask_img).reshape((*self.dim, 1))
-
-            print("Image size", train_img.size)
         return X, Y
 
     def on_epoch_end(self):
         """[summary]
         Updates indexes after each epoch
         """
-        print(self.images)
+        print("Epoch end =>>>")
         self.indexes = np.arange(len(self.images))
         if self.shuffle == True:
             np.random.shuffle(self.indexes) 

@@ -1,9 +1,9 @@
-from keras.models import Model
-from keras.layers import Input, BatchNormalization, Activation, Dense, Dropout, UpSampling2D
-from keras.layers.convolutional import Conv2D, Conv2DTranspose
-from keras.layers.pooling import MaxPooling2D
-from keras.layers.merge import concatenate, add
-from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
+from tensorflow.python.keras.models import Model
+from tensorflow.python.keras.layers import Input, BatchNormalization, Activation, Dense, Dropout, UpSampling2D
+from tensorflow.python.keras.layers import Conv2D, Conv2DTranspose
+from tensorflow.python.keras.layers import MaxPooling2D
+from tensorflow.python.keras.layers import concatenate, add
+from tensorflow.python.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
 
 def unet(pretrained_weights = None,input_size = (256, 256, 3)):
     inputs = Input(input_size)
