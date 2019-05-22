@@ -107,4 +107,7 @@ venv.bak/
 das-bigdata-deployment/frameworks
 .vscode/
 
-*.py.swp
+#*.py.swp
+#train_data/
+test_data/
+original_data/

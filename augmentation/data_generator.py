@@ -7,7 +7,7 @@ from PIL import Image
 # TODO: User properties for validating parameters
 class DataGenerator(keras.utils.Sequence):
     def __init__(self, image_folder, images, masks, 
-                batch_size=10, dim=(5000, 5000), nchannels=3,
+                batch_size=10, dim=(256, 256), nchannels=3,
                 shuffle=True):
         self.image_folder = image_folder
         self.images = images
@@ -44,10 +44,8 @@ class DataGenerator(keras.utils.Sequence):
         Arguments:
             batch_images {list of images in each batch}
         """
-        UNET_SIZE = 4096
+        UNET_SIZE = 256
 
-        if self.dim[0] < UNET_SIZE or self.dim[1] < UNET_SIZE:
-            raise Exception('Image size should be greater than 4096')
 
         crop_top_left = int((self.dim[0] - UNET_SIZE)/2)
         crop_bottom_right = crop_top_left + UNET_SIZE
@@ -56,14 +54,11 @@ class DataGenerator(keras.utils.Sequence):
         Y = np.empty((self.batch_size, *self.dim, 1))
 
         for index, image in enumerate(batch_images):
-            train_img = Image.open(self.image_folder + '/images/' + image) \
-                              .crop((crop_top_left, crop_top_left, crop_bottom_right, crop_bottom_right))
-            X[index, ] = np.asarray(train_img)
+            train_img = Image.open(self.image_folder + '/images/' + image) 
+            X[index, ] = np.asarray(train_img).astype('float32') / 255
 
-            mask_img = Image.open(self.image_folder + '/masks/' + image) \
-                              .crop((crop_top_left, crop_top_left, crop_bottom_right, crop_bottom_right)) 
-                              
-            Y[index, ] = np.asarray(mask_img).reshape((*self.dim, 1))
+            mask_img = Image.open(self.image_folder + '/masks/' + image)  
+            Y[index, ] = np.asarray(mask_img).reshape((*self.dim, 1)).astype('float32') / 255
         return X, Y
 
     def on_epoch_end(self):

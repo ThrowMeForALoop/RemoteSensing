@@ -14,15 +14,15 @@ from tensorflow.python.keras.optimizers import Adam
 
 if __name__=="__main__":
     # Parameters
-    IMAGE_SIZE = 4096, 4096
-    BATCH_SIZE = 1
+    IMAGE_SIZE = 256, 256
+    BATCH_SIZE = 10
 
     train_model = unet(pretrained_weights=None, input_size=(*IMAGE_SIZE, 3))
     train_model.compile(loss = 'binary_crossentropy',
                         optimizer=Adam(lr = 1e-4),
                         metrics=['accuracy'])
 
-    model_checkpoint = ModelCheckpoint('unet_membrane.hdf5', monitor='loss',
+    model_checkpoint = ModelCheckpoint('unet_building.hdf5', monitor='loss',
                                         verbose=1, save_best_only=True)
     train_dir = os.getcwd() + '/train_data'
     print("Train dir ->> ", train_dir)
