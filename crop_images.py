@@ -17,21 +17,21 @@ def crop(input_dir, image, height, width, output_dir):
   
     k = 0
     for i in range(0,imgheight,height):
-  for j in range(0,imgwidth,width):
-    top_left_x = j
-    top_left_y = i
-    if top_left_x + width > imgwidth:
-      top_left_x = imgwidth - width
-    if top_left_y + height > imgheight:
-      top_left_y = imgheight - height
- 
-    box = (top_left_x, top_left_y, top_left_x+width, top_left_y+height)
-    absolute_output_image = '{0}/{1}-{2}.png'.format(output_dir, image_name, k)
-    try:
-      new_image = im.crop(box).save(absolute_output_image)
-    except:
-      pass
-    k +=1
+        for j in range(0,imgwidth,width):
+            top_left_x = j
+            top_left_y = i
+            if top_left_x + width > imgwidth:
+                top_left_x = imgwidth - width
+            if top_left_y + height > imgheight:
+                top_left_y = imgheight - height
+        
+            box = (top_left_x, top_left_y, top_left_x+width, top_left_y+height)
+            absolute_output_image = '{0}/{1}-{2}.png'.format(output_dir, image_name, k)
+            try:
+                im.crop(box).save(absolute_output_image)
+            except:
+                pass
+            k +=1
     print("Cropped:" + image + "to {}".format(k) + "images")  
 
 if __name__ == '__main__':
