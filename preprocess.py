@@ -5,7 +5,7 @@ from petastorm.unischema import dict_to_spark_row, Unischema, UnischemaField
 from PIL import Image
 from io import BytesIO
 
-DEFAULT_IMAGE_SIZE = (4096, 4096)
+DEFAULT_IMAGE_SIZE = (128, 128)
 
 # The schema defines how the dataset schema looks like
 FeatureSchema = Unischema('FeatureSchema', [
@@ -21,13 +21,13 @@ TrainSchema = Unischema('TrainSchema', [
     UnischemaField('masks', np.uint8, (DEFAULT_IMAGE_SIZE[0], DEFAULT_IMAGE_SIZE[1]), CompressedImageCodec('png'), False)
 ])
 
-def resize_image(raw_image_data, image_size = (4096, 4096)):
-    img = Image.open(BytesIO(raw_image_data))
-    img = img.resize((image_size[0], image_size[1]), Image.ANTIALIAS)
-    return img
+# def resize_image(raw_image_data, image_size = (128, 128)):
+#     img = Image.open(BytesIO(raw_image_data))
+#     img = img.resize((image_size[0], image_size[1]), Image.ANTIALIAS)
+#     return img
 
 def raw_image_to_numpy_array(raw_image_data):
-    img = resize_image(raw_image_data)
+    img = Image.open(BytesIO(raw_image_data))
     return np.asarray(img)
 
 def generate_parquet(feature_path, mask_path, output_path):
@@ -65,6 +65,8 @@ def generate_parquet(feature_path, mask_path, output_path):
    
     # Load masks and convert it to dataframe
     mask_rdd = sc.binaryFiles(mask_path)
+
+    # Convert mask rgb value to 0 for not building and 1 for building
     mask_flat_numpy_rdd = mask_rdd.values().map(raw_image_to_numpy_array) \
                                            .map(lambda image_np_array: (image_np_array / 255).astype(np.uint8)) \
                                            .map(lambda x: {'masks': x}) \

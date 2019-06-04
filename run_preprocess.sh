@@ -1,5 +1,5 @@
 #!/bin/bash
-PYSPARK_PYTHON=/var/scratch/tnguyenh/anaconda3/envs/rs/bin/python spark-submit --master yarn \
+PYSPARK_PYTHON=/var/scratch/tnguyenh/anaconda3/envs/rs_gpu/bin/python spark-submit --master yarn \
  								     --driver-memory 8g \
  								     --executor-memory 10g \
 								     --num-executors 4 \
