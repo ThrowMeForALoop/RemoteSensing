@@ -59,10 +59,11 @@ def generate_parquet(feature_path, mask_path, output_path):
     images_rdd = sc.binaryFiles(feature_path)
     image_flat_numpy_rdd = images_rdd.values().map(raw_image_to_numpy_array) \
                                             .map(lambda x: {'features': x}) \
-                                            .map(lambda x: dict_to_spark_row(FeatureSchema, x))
+                                            .map(lambda x: dict_to_spark_row(FeatureSchema, x)) \
+                                            .repartition(7)
+
     image_df = session.createDataFrame(image_flat_numpy_rdd, FeatureSchema.as_spark_schema()) \
                         .withColumn("id", monotonically_increasing_id()) # Generate table row id 
-   
     # Load masks and convert it to dataframe
     mask_rdd = sc.binaryFiles(mask_path)
 
@@ -76,7 +77,7 @@ def generate_parquet(feature_path, mask_path, output_path):
                         .withColumn("id", monotonically_increasing_id()) # Generate table row id 
     
     # Concat image_df and mask_df row by row
-    train_df = image_df.join(mask_df, "id", "outer").drop("id")
+    train_df = image_df.join(mask_df, "id", "outer").drop("id").repartition(200)
     with materialize_dataset(session, output_path, TrainSchema, rowgroup_size_mb):
             train_df.write \
                     .mode('overwrite') \
