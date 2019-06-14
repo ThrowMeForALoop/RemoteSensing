@@ -1,6 +1,7 @@
 name: rs
 channels:
 - cqwz
+- conda-forge
 dependencies:
 - python=3.6.8
 - tensorflow=1.12
@@ -8,6 +9,7 @@ dependencies:
 - gcc-5=5.2.0
 - libgcc=7.2.0
 - pillow==6.0.0
+- packaging==16.8
 - pip:
   - petastorm=0.7.2
   - future=0.17.1
