@@ -14,7 +14,7 @@ session = tf.Session(config=config)
 
 if __name__=="__main__":
     # Parameters
-    IMAGE_SIZE = 256, 256
+    IMAGE_SIZE = 128, 128
     BATCH_SIZE = 1
     DEFAULT_EPOCHS = 10
 
@@ -37,7 +37,7 @@ if __name__=="__main__":
     
     # Load test data
     test_generator = DataGenerator(test_dir, test_images, None,
-                batch_size=1, dim=(256, 256), nchannels=3, shuffle=False)
+                batch_size=1, dim=(128, 128), nchannels=3, shuffle=False)
     predict = model.predict_generator(test_generator, steps = len(test_images))
     predict = ((predict > 0.3).astype(np.uint8)) * 255
 

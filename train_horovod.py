@@ -182,7 +182,8 @@ def train_fn(model_bytes):
     ]
 
     # Model checkpoint location.
-    ckpt_dir = tempfile.mkdtemp()
+    #ckpt_dir = tempfile.mkdtemp()
+    ckpt_dir = os.path.join(os.getcwd(), 'checkpoints')
     ckpt_file = os.path.join(ckpt_dir, 'checkpoint.h5')
     atexit.register(lambda: shutil.rmtree(ckpt_dir))
 
