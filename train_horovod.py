@@ -182,14 +182,14 @@ def train_fn(model_bytes):
     ]
 
     # Model checkpoint location.
-    #ckpt_dir = tempfile.mkdtemp()
-    ckpt_dir = os.path.join(os.getcwd(), 'checkpoints')
+    ckpt_dir = tempfile.mkdtemp()
+    #ckpt_dir = os.path.join(os.getcwd(), 'checkpoints')
     ckpt_file = os.path.join(ckpt_dir, 'checkpoint.h5')
     atexit.register(lambda: shutil.rmtree(ckpt_dir))
 
     # Horovod: save checkpoints only on the first worker to prevent other workers from corrupting them.
     if hvd.rank() == 0:
-        callbacks.append(ModelCheckpoint(ckpt_dir, monitor='loss',
+        callbacks.append(ModelCheckpoint(ckpt_file, monitor='loss',
                                         verbose=1, save_best_only=True))
 
     # Make Petastorm readers.
@@ -223,7 +223,7 @@ def train_fn(model_bytes):
                                 validation_steps=int(VAL_ROWS / BATCH_SIZE / hvd.size()),
                                 callbacks=callbacks,
                                 verbose=verbose,
-                                epochs=2)
+                                epochs=10)
 
     # Dataset API usage currently displays a wall of errors upon termination.
     # This global model registration ensures clean termination.
