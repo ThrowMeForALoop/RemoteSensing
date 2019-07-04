@@ -1,3 +1,0 @@
-petastorm==0.7.3
-opencv-python==4.1.0.25
-horovod==0.14.1
