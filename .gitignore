@@ -109,5 +109,10 @@ das-bigdata-deployment/frameworks
 
 #*.py.swp
 #train_data/
-test_data/
+test_data*/
 original_data/
+result/
+train_data*/
+validation_data*/
+
+*.hdf5
