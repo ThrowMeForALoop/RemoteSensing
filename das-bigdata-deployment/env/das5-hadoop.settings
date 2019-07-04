@@ -1,0 +1,2 @@
+java_home=/etc/alternatives/java_sdk_1.8.0/
+yarn_enable=false

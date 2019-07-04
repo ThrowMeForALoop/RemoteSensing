@@ -1,0 +1,2 @@
+worker_cores=8
+worker_memory=22g
