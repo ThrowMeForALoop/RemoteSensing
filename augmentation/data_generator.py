@@ -44,18 +44,16 @@ class DataGenerator(keras.utils.Sequence):
         Arguments:
             batch_images {list of images in each batch}
         """
-        UNET_SIZE = 256
 
-
-        crop_top_left = int((self.dim[0] - UNET_SIZE)/2)
-        crop_bottom_right = crop_top_left + UNET_SIZE
-      
         X = np.empty((self.batch_size, *self.dim, self.nchannels))
         Y = np.empty((self.batch_size, *self.dim, 1))
 
         for index, image in enumerate(batch_images):
             train_img = Image.open(self.image_folder + '/images/' + image) 
             X[index, ] = np.asarray(train_img).astype('float32') / 255
+            
+            if self.masks is None:
+                return X
 
             mask_img = Image.open(self.image_folder + '/masks/' + image)  
             Y[index, ] = np.asarray(mask_img).reshape((*self.dim, 1)).astype('float32') / 255

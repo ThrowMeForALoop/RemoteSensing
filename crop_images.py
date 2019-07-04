@@ -41,11 +41,14 @@ if __name__ == '__main__':
   original_image_dir = '/var/scratch/tnguyenh/datasets/inria_aerial/AerialImageDataset/train/images'
   original_mask_dir = '/var/scratch/tnguyenh/datasets/inria_aerial/AerialImageDataset/train/gt'
   
-  processed_train_image_dir = cur_dir + '/train_data/images'
-  processed_train_mask_dir = cur_dir + '/train_data/masks'
+  processed_train_image_dir = cur_dir + '/train_data_256/images'
+  processed_train_mask_dir = cur_dir + '/train_data_256/masks'
   
-  processed_test_image_dir = cur_dir + '/test_data/images'
-  processed_test_mask_dir = cur_dir + '/test_data/masks'
+  processed_validation_image_dir = cur_dir + '/validation_data_256/images'
+  processed_validation_mask_dir = cur_dir + '/validation_data_256/masks'
+
+  processed_test_image_dir = cur_dir + '/test_data_256/images'
+  processed_test_mask_dir = cur_dir + '/test_data_256/masks'
   
   
   if not os.path.exists(processed_train_image_dir) or \
@@ -54,11 +57,15 @@ if __name__ == '__main__':
      not os.path.exists(processed_test_mask_dir):
                 os.makedirs(processed_train_image_dir)
                 os.makedirs(processed_train_mask_dir)
-                os.makedirs(processed_test_image_dir)
+                os.makedirs(processed_validation_image_dir)
+                os.makedirs(processed_validation_mask_dir)
+               	os.makedirs(processed_test_image_dir)
                 os.makedirs(processed_test_mask_dir)
   else:
     shutil.rmtree(processed_train_image_dir)
     shutil.rmtree(processed_train_mask_dir)
+    shutil.rmtree(processed_validation_image_dir)
+    shutil.rmtree(processed_validation_mask_dir)
     shutil.rmtree(processed_test_image_dir)
     shutil.rmtree(processed_test_mask_dir)
     
@@ -69,15 +76,16 @@ if __name__ == '__main__':
     raise Exception("Images is not matched to masks")
   
   # Divide train and test
-  train_image_names, test_image_names = train_test_split(images, test_size=0.2, random_state=42)
+  train_image_names, validation_and_test_image_names = train_test_split(images, test_size=0.2, random_state=42)
+  validation_image_names, test_image_names = train_test_split(validation_and_test_image_names, test_size=0.5, random_state=42)
+
   
-  import sys
   print("Train images len {}, Test images len {}".format(len(train_image_names), len(test_image_names)))
-  print("Test", test_image_names)
-  sys.exit()
   for image in images:
     if image in train_image_names:
       output_dir= processed_train_image_dir
+    elif image in validation_image_names:
+      output_dir = processed_validation_image_dir
     else:
       output_dir = processed_test_image_dir
 
@@ -88,6 +96,8 @@ if __name__ == '__main__':
   for mask in masks:
     if mask in train_image_names:
       output_dir= processed_train_mask_dir
+    elif mask in validation_image_names:
+      output_dir = processed_validation_mask_dir
     else:
       output_dir = processed_test_mask_dir
  
